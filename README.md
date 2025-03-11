@@ -52,6 +52,13 @@ Read [https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?v
 
 [https://aka.ms/vs/17/release/vc_redist.x64.exe](https://aka.ms/vs/17/release/vc_redist.x64.exe)
 
+
+## Rebuild Linux kernel in WSL2
+
+- To mount USB Drives : [https://learn.microsoft.com/en-us/windows/wsl/connect-usb](https://learn.microsoft.com/en-us/windows/wsl/connect-usb)
+- See also how to [rebuild Linux kernel in WSL2](https://github.com/ezYakaEagle442/secure-wipe)
+
+
 ## Install Google USB Driver
 
 Download:
@@ -176,6 +183,7 @@ go to Parameters / System / Developpers options :
 - USB debugging MUST BE switched OFF
 
 ```bash
+ls -l /dev/disk/by-uuid 
 ls -al /mnt/d
 
 mtp-detect
@@ -274,8 +282,6 @@ exit
 
 
 Enable OEM unlock in the Developer options under device Settings, if present.
-
-
 ```bash
 adb reboot bootloader
 ```
@@ -290,11 +296,70 @@ If fastboot does not see your device from the above command, from Windows Device
 
 ![Android KO](img/devicemanager_android_ko.png)
 
-From DeviceManager, Update the Andoid USB drivers using the files from C:\Program Files (x86)\OnePlus USB Drivers, you should not need the files copied as step [Get the OEM USB Drivers](#get-the-oem-usb-drivers), 
+From DeviceManager, Update the Andoid USB drivers using the files from C:\Program Files (x86)\OnePlus USB Drivers, you should not need the files copied as step [Get the OEM USB Drivers](#get-the-oem-usb-drivers).
+
+If the issue is till not resolved, or you it this error message:
+"__The hash for the file is not present in the specified catalog file. The file is likely corrupt or the victim of tampering__"
+
+Read [XDA Forum](https://xdaforums.com/t/guide-fix-device-not-showing-up-in-fastboot-mode-windows-10-11.4194491/)
+
+1. To get around this we are going to disabled signed drivers on windows
+
+    - Select the “Start” button.
+    - Type “startup”.
+    - Select “Change advanced startup settings“.
+    - Select “Restart now” under the “Advanced startup” area.
+    - Once presented with the Advanced options select...
+        “Troubleshoot“ --> “Advanced Options“ --> “Startup Options“ --> “Restart“
+    - After that, a menu will appear where you can press “7” on your keyboard to choose “Disable driver signing enforcement“.
+        note: if BitLocker is enabled, you will need the BitLocker key
+
+2. Now Device Driver Signing should be disabled, allowing you to install any driver until you reboot, meaning we can install our unsigned OnePlus driver.
+
+    - Pop open Device Manager
+        You can press windows + x to bring up a menu, then you can press m or select device manager for quick access
+    - Boot your device into fastboot mode.
+        This should cause it to show up in device manager as "Andriod", with a yellow triangle
+    - In device manager right click the "android" device
+    - Then press the following options
+        Update driver --> Browse my computer --> Let me pick --> Have Disk
+    - Navigate to the folder from earlier: C:\Program Files (x86)\OnePlus USB Drivers and click okay
+    - After that, OnePlus Android Bootloader interface should be selected. Go ahead and install it.
+
+![Android Boot Loader Interface](img/devicemanager_android_bootloaderinterface_OK.png)
+
+Then you have to go to Windows Update and browse the **optional** updates :
+![Windows Update](img/Windows%20Update_%20Android%20Boot%20Loader%20Interface.png)
+
 
 ```bash
-sudo fastboot devices -l -v -s SERIAL
+sudo fastboot devices -l -v 
 ```
+
+You can test from DOS : 
+```bash
+fastboot devices -l
+```
+
+```console
+C:\Android>fastboot devices -l
+2770048a               fastboot
+```
+
+[See this hotfix](https://stackoverflow.com/questions/60166965/adb-device-list-empty-using-wsl2) :
+```bash
+printf '\n%s\n%s\n' \
+'### Alias  for Android Debugging in WSL2' \
+'alias adb="/mnt/c/Android/adb.exe"' \ 
+ >> ~/.bashrc
+
+source ~/.bashrc
+```
+
+## Install Android platform-tools
+
+Read [https://developer.android.com/tools/releases/platform-tools](https://developer.android.com/tools/releases/platform-tools)
+
 
 Now type the following command to unlock the bootloader:
 ```bash
