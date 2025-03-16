@@ -95,6 +95,11 @@ Run OnePlus_setup.exe. Drivers should be installed at:
 
 Check Installation log files at C:\Program Files (x86)\OnePlus USB Drivers\install_log.txt
 
+## Enbale Developer mode
+
+Go to Settings / About the device phone / hit 7 times the Nuild Number
+Then Check : go to System , go donw to 'Options for Developers'
+
 ## Install Android Debug Bridge
 
 Read :
@@ -271,7 +276,19 @@ sudo fastboot devices -l -v
 adb shell
 uname -a
 whoami
+pwd
+
+# external SD-Card
+ls -al /sdcard/
+ls -al /storage/emulated/0/DCIM
+
+# internal memory
+ls -al /mnt/runtime/write
+
 exit
+
+# if you want to get a local copy in WSL2 of your Android storage
+adb pull /storage/self/primary/
 
 # https://askubuntu.com/questions/264726/adbd-cannot-run-as-root-in-production-builds
 # adb shell setprop ro.secure 0
@@ -356,9 +373,8 @@ printf '\n%s\n%s\n' \
 source ~/.bashrc
 ```
 
-## Install Android platform-tools
-
-Read [https://developer.android.com/tools/releases/platform-tools](https://developer.android.com/tools/releases/platform-tools)
+If you need to uninstall the Android Driver to Fix & Kedacom USB Interface , then your Android phone will be displayed again as Android Boot Loader Interface in Windows Device Manager
+https://www.youtube.com/watch?v=K1hDEBCYHSo
 
 
 Now type the following command to unlock the bootloader:
@@ -395,6 +411,7 @@ ls -al /data/data/com.android.providers.contacts/databases/
 - [https://developer.android.com/identity/data/backup](https://developer.android.com/identity/data/backup)
 - [https://developer.android.com/identity/data/autobackup#EnablingAutoBackup](https://developer.android.com/identity/data/autobackup#EnablingAutoBackup)
 - [https://developer.android.com/reference/android/provider/Telephony.Sms?hl=en](https://developer.android.com/reference/android/provider/Telephony.Sms?hl=en)
+- [https://forum.f-droid.org/t/copy-my-contacts-from-my-old-phone/22007](https://forum.f-droid.org/t/copy-my-contacts-from-my-old-phone/22007)
 - [Query to get SMS](https://www.youtube.com/watch?v=MgUl5qoCyuc)
 - [How to recover deleted sms messages from android](https://www.youtube.com/watch?v=4MUf8AvjvT0)
 - [https://developer.android.com/about/versions/12/behavior-changes-12#adb-backup-restrictions](https://developer.android.com/about/versions/12/behavior-changes-12#adb-backup-restrictions)
@@ -435,36 +452,9 @@ Other options: you can use a Dual Drive USB Key which can be plugged either to y
 
 If you need to purge your phone, you can find this [App from the Play Store](https://play.google.com/store/apps/details?id=com.projectstar.ishredder.android.standard), however be aware that such kinf of App can collect some data (ex: your name and email address)
 
-# Install /e/OS on a OnePlus 6T - “fajita”
-
-Read :
-- [Check if your device is supported by /e/OS](https://doc.e.foundation/devices)
-- [https://doc.e.foundation/devices/fajita/install](https://doc.e.foundation/devices/fajita/install)
-- [https://images.ecloud.global/community/fajita/](https://images.ecloud.global/community/fajita/)
-- [https://doc.e.foundation/devices/fajita](https://doc.e.foundation/devices/fajita)
-- [If you have a FairPhone, Get you BootLoader unlocking code](https://www.fairphone.com/en/bootloader-unlocking-code-for-fairphone-3/)
-- [https://support.fairphone.com/hc/en-us/articles/18896094650513-Install-Fairphone-OS-manually](https://support.fairphone.com/hc/en-us/articles/18896094650513-Install-Fairphone-OS-manually)
+## Download OS image
 
 ```bash
-
-
-```
-```console
-
-```
-
-#  
-
-Read :
-- [https://forum.ubuntu-fr.org/viewtopic.php?id=2071952](https://forum.ubuntu-fr.org/viewtopic.php?id=2071952)
-- []()
-- [https://doc.e.foundation/devices/fajita/install](https://doc.e.foundation/devices/fajita/install)
-- [https://images.ecloud.global/community/fajita/](https://images.ecloud.global/community/fajita/)
-- []()
-
-## 
-```bash
-
 sudo apt install hashalot
 sudo apt install checksums
 wget https://images.ecloud.global/community/fajita/e-2.8-a14-20250221470208-community-fajita.zip.sha256sum
@@ -481,14 +471,112 @@ cat ORIGINAL_HASH
 shasum -a 256 $FILE_PATH | awk '{print $1}' > ecloud_OnePlus_6T_Fajita_SHA256
 cat ecloud_OnePlus_6T_Fajita_SHA256
 diff -qs ecloud_OnePlus_6T_Fajita_SHA256 ORIGINAL_HASH
+```
+```console
+93d6a9cdb7f431f150c181f92f7839d2f549aec3a8216bd879d71ad2137f7ef
+Files ecloud_OnePlus_6T_Fajita_SHA256 and ORIGINAL_HASH are identical
+```
+
+```bash
+wget https://images.ecloud.global/community/fajita/recovery-e-2.8-a14-20250221470208-community-fajita.img
+wget https://images.ecloud.global/community/fajita/recovery-e-2.8-a14-20250221470208-community-fajita.img.sha256sum
+IMG_FILE_PATH="/mnt/c/github/android-forensics/recovery-e-2.8-a14-20250221470208-community-fajita.img"
+HASH="c0d7fbbc6c6654d51ae328127f1a0a05a6044390cafa440ff0b06cf9badcf788"
+
+echo "$HASH" | tr '[:upper:]' '[:lower:]' > ORIGINAL_IMG_HASH
+cat ORIGINAL_IMG_HASH
+shasum -a 256 $IMG_FILE_PATH | awk '{print $1}' > ecloud_OnePlus_6T_Fajita_IMG_SHA256
+cat ecloud_OnePlus_6T_Fajita_IMG_SHA256
+diff -qs ecloud_OnePlus_6T_Fajita_IMG_SHA256 ORIGINAL_IMG_HASH
+
+```
+
+```console
+c0d7fbbc6c6654d51ae328127f1a0a05a6044390cafa440ff0b06cf9badcf788
+Files ecloud_OnePlus_6T_Fajita_IMG_SHA256 and ORIGINAL_IMG_HASH are identical
+```
+# Root your device
+
+Read:
+- [https://github.com/topjohnwu/Magisk/releases/tag/v28.1](https://github.com/topjohnwu/Magisk/releases/tag/v28.1)
+- [OnePlus 6T Fajita : Unlock Bootloader | Flash TWRP | Root](https://community.oneplus.com/thread/931719)
+- [TWRP](https://twrp.me/oneplus/oneplus6t.html)
+
+```bash
+wget https://github.com/topjohnwu/Magisk/archive/refs/tags/v28.1.zip
+wget https://eu.dl.twrp.me/fajita/twrp-installer-3.7.0_9-0-fajita.zip
+wget https://eu.dl.twrp.me/fajita/twrp-3.7.0_9-0-fajita.img
+```
+
+
+# Install /e/OS on a OnePlus 6T - “fajita”
+
+Read :
+- [Check if your device is supported by /e/OS](https://doc.e.foundation/devices)
+- [https://doc.e.foundation/devices/fajita/install](https://doc.e.foundation/devices/fajita/install)
+- [https://images.ecloud.global/community/fajita/](https://images.ecloud.global/community/fajita/)
+- [https://doc.e.foundation/devices/fajita](https://doc.e.foundation/devices/fajita)
+- [If you have a FairPhone, Get you BootLoader unlocking code](https://www.fairphone.com/en/bootloader-unlocking-code-for-fairphone-3/)
+- [https://support.fairphone.com/hc/en-us/articles/18896094650513-Install-Fairphone-OS-manually](https://support.fairphone.com/hc/en-us/articles/18896094650513-Install-Fairphone-OS-manually)
+- [https://forum.ubuntu-fr.org/viewtopic.php?id=2071952](https://forum.ubuntu-fr.org/viewtopic.php?id=2071952)
+- [https://www.thecustomdroid.com/oneplus-factory-image-creation-guide/](https://www.thecustomdroid.com/oneplus-factory-image-creation-guide/)
+
+
+```bash
+# Check your device is still connected
+adb devices
+adb reboot bootloader
+
+# Check your device is still connected
+fastboot devices
+# fastboot flashing unlock
+
+# c reboot
+# adb reboot bootloader
+
+# fastboot devices
+# fastboot flash recovery : fastboot flash boot image-xxxx
+#fastboot boot twrp-installer-3.7.0_9-0-fajita.zip
+# fastboot reboot
+#fastboot boot twrp-3.7.0_9-0-fajita.img
+#adb sideload magisk-v28.1.zip
+
+fastboot reboot-bootloader
+fastboot flash boot recovery-e-2.8-a14-20250221470208-community-fajita.img
+fastboot reboot-bootloader
+fastboot flash boot recovery-e-2.8-a14-20250221470208-community-fajita.img
+fastboot reboot-bootloader
+
+fastboot boot recovery-e-2.8-a14-20250221470208-community-fajita.img
+adb sideload e-2.8-a14-20250221470208-community-fajita.zip
+
+#fastboot boot recovery-e-2.8-a14-20250221470208-community-fajita.img
+# fastboot boot magisk-v28.1.zip
+
+fastboot reboot 
+
 
 
 ```
+
+```console
+target reported max download size of 805306368 bytes
+sending 'boot' (6 KB)...
+OKAY [  0.012s]
+writing 'boot'...
+OKAY [  0.004s]
+finished. total time: 0.018s
+```
+
+Once done and booted in TWRP follow below to root the device by entering TWRP Sideload Menu:
+
+```bash
+adb sideload ./magisk-v28.1.zip
+```
+
 ```console
 
 ```
-
-
 
 
 # Post-Install Clean-Up
