@@ -95,7 +95,7 @@ Run OnePlus_setup.exe. Drivers should be installed at:
 
 Check Installation log files at C:\Program Files (x86)\OnePlus USB Drivers\install_log.txt
 
-## Enbale Developer mode
+## Enable Developer mode
 
 Go to Settings / About the device phone / hit 7 times the Nuild Number
 Then Check : go to System , go donw to 'Options for Developers'
@@ -283,7 +283,7 @@ ls -al /sdcard/
 ls -al /storage/emulated/0/DCIM
 
 # internal memory
-ls -al /mnt/runtime/write
+ls -al /storage/self/primary/ # /mnt/runtime/write
 
 exit
 
@@ -501,12 +501,44 @@ Read:
 - [https://github.com/topjohnwu/Magisk/releases/tag/v28.1](https://github.com/topjohnwu/Magisk/releases/tag/v28.1)
 - [OnePlus 6T Fajita : Unlock Bootloader | Flash TWRP | Root](https://community.oneplus.com/thread/931719)
 - [TWRP](https://twrp.me/oneplus/oneplus6t.html)
+- [https://www.youtube.com/watch?v=3A7BESc1-7g](https://www.youtube.com/watch?v=3A7BESc1-7g)
+
+Copy the installer to the phone internal memory
 
 ```bash
+# adb shell ls -al /proc/self/mounts /system/etc 
+# adb shell "mount -o 'rw,remount' '/mnt/system'"
+# adb shell "mount -o 'rw,remount' '/proc/self/mounts'"
+
 wget https://github.com/topjohnwu/Magisk/archive/refs/tags/v28.1.zip
 wget https://eu.dl.twrp.me/fajita/twrp-installer-3.7.0_9-0-fajita.zip
 wget https://eu.dl.twrp.me/fajita/twrp-3.7.0_9-0-fajita.img
+
+adb push twrp-installer-3.7.0_9-0-fajita.zip /storage/emulated/0
+mv v28.1.zip magisk-v28.1.zip
+adb push magisk-v28.1.zip /storage/emulated/0
+
+# fastboot devices
+fastboot boot twrp-3.7.0_9-0-fajita.img
+
+# fastboot flash recovery : fastboot flash boot image-xxxx
+#fastboot boot twrp-installer-3.7.0_9-0-fajita.zip
+# fastboot reboot
+#adb sideload magisk-v28.1.zip
+
 ```
+
+
+Once done and booted in TWRP follow below to root the device by entering TWRP Sideload Menu:
+
+```bash
+adb sideload ./magisk-v28.1.zip
+```
+
+```console
+
+```
+
 
 
 # Install /e/OS on a OnePlus 6T - “fajita”
@@ -534,19 +566,9 @@ fastboot devices
 # c reboot
 # adb reboot bootloader
 
-# fastboot devices
-# fastboot flash recovery : fastboot flash boot image-xxxx
-#fastboot boot twrp-installer-3.7.0_9-0-fajita.zip
-# fastboot reboot
-#fastboot boot twrp-3.7.0_9-0-fajita.img
-#adb sideload magisk-v28.1.zip
-
 fastboot reboot-bootloader
 fastboot flash boot recovery-e-2.8-a14-20250221470208-community-fajita.img
 fastboot reboot-bootloader
-fastboot flash boot recovery-e-2.8-a14-20250221470208-community-fajita.img
-fastboot reboot-bootloader
-
 fastboot boot recovery-e-2.8-a14-20250221470208-community-fajita.img
 adb sideload e-2.8-a14-20250221470208-community-fajita.zip
 
@@ -568,15 +590,6 @@ OKAY [  0.004s]
 finished. total time: 0.018s
 ```
 
-Once done and booted in TWRP follow below to root the device by entering TWRP Sideload Menu:
-
-```bash
-adb sideload ./magisk-v28.1.zip
-```
-
-```console
-
-```
 
 
 # Post-Install Clean-Up
